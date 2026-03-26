@@ -15,5 +15,11 @@ jobs:
           python-version: "3.12"
       - name: Install ESPHome
         run: pip install --upgrade esphome
+      - name: Build local CI config
+        run: |
+          cp example/hello_world_m5papers3.yaml /tmp/hello_world_ci.yaml
+          sed -i 's|type: git|type: local|g' /tmp/hello_world_ci.yaml
+          sed -i 's|url: https://github.com/ThomasHFWright/ESPHomeFastEPD|path: ${GITHUB_WORKSPACE}/components|g' /tmp/hello_world_ci.yaml
+          sed -i '/ref: main/d' /tmp/hello_world_ci.yaml
       - name: Validate example YAML
-        run: esphome config example/hello_world_m5papers3.yaml
+        run: esphome config /tmp/hello_world_ci.yaml
