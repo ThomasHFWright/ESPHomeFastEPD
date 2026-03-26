@@ -16,6 +16,8 @@ void FastEPDDisplay::setup() {
   }
 
   this->fastepd_.fillScreen(BBEP_WHITE);
+  ESP_LOGI(TAG, "Performing initial display render");
+  this->do_update_();
   this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
   this->initialized_ = true;
 }
