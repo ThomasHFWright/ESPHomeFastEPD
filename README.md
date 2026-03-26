@@ -95,3 +95,24 @@ This repo now uses **strict pre-commit linting** for Python, YAML, and C/C++ for
    ```
 
 With `core.hooksPath` set to `.githooks`, commits are blocked when lint fails. CI also enforces this via `.github/workflows/lint.yml`.
+
+## Codex/container TLS bootstrap helper
+
+If your container fails to download PlatformIO/toolchain packages with TLS errors (for example certificate verify failures), run:
+
+```bash
+./scripts/codex_bootstrap_and_compile.sh hello_world_ci.yaml
+
+# Optional: force a specific CA bundle
+CA_BUNDLE=/path/to/your/company-root-ca.pem \
+  ./scripts/codex_bootstrap_and_compile.sh hello_world_ci.yaml
+```
+
+This helper script:
+- uses `$CA_BUNDLE` if provided, otherwise selects a system CA bundle when available
+- exports `SSL_CERT_FILE`, `REQUESTS_CA_BUNDLE`, `CURL_CA_BUNDLE`, and `PIP_CERT`
+- configures git `http.sslCAInfo`
+- installs/upgrades `esphome`
+- runs `python -m esphome compile ...`
+
+This is intended for ephemeral CI/Codex-style environments where CA setup is inconsistent.
