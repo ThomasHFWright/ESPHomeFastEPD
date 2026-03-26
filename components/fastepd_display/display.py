@@ -6,9 +6,7 @@ from esphome.const import CONF_ID
 AUTO_LOAD = ["display"]
 
 fastepd_display_ns = cg.esphome_ns.namespace("fastepd_display")
-FastEPDDisplay = fastepd_display_ns.class_(
-    "FastEPDDisplay", cg.PollingComponent, display.DisplayBuffer
-)
+FastEPDDisplay = fastepd_display_ns.class_("FastEPDDisplay", display.DisplayBuffer)
 
 CONF_FULL_UPDATE_CLEAR_MODE = "full_update_clear_mode"
 

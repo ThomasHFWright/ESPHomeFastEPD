@@ -8,7 +8,7 @@
 namespace esphome {
 namespace fastepd_display {
 
-class FastEPDDisplay : public PollingComponent, public display::DisplayBuffer {
+class FastEPDDisplay : public display::DisplayBuffer {
 public:
   void setup() override;
   void update() override;
