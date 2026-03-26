@@ -26,8 +26,7 @@ void FastEPDDisplay::setup() {
   this->fastepd_.fillScreen(BBEP_WHITE);
   ESP_LOGI(TAG, "Performing initial display render");
   this->do_update_();
-  const int update_rc =
-      this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
+  const int update_rc = this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
   if (update_rc != BBEP_SUCCESS) {
     ESP_LOGE(TAG, "FastEPD initial full update failed (error=%d)", update_rc);
     this->mark_failed();
@@ -42,8 +41,7 @@ void FastEPDDisplay::update() {
   }
 
   this->do_update_();
-  const int update_rc =
-      this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
+  const int update_rc = this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
   if (update_rc != BBEP_SUCCESS) {
     ESP_LOGE(TAG, "FastEPD full update failed (error=%d)", update_rc);
     this->status_set_warning();
