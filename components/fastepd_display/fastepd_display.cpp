@@ -8,6 +8,7 @@ namespace fastepd_display {
 static const char *const TAG = "fastepd_display";
 
 void FastEPDDisplay::setup() {
+  ESP_LOGI(TAG, "Initializing FastEPD panel");
   const int rc = this->fastepd_.initPanel(BB_PANEL_M5PAPERS3);
   if (rc != BBEP_SUCCESS) {
     ESP_LOGE(TAG, "FastEPD init failed (error=%d)", rc);
@@ -15,10 +16,23 @@ void FastEPDDisplay::setup() {
     return;
   }
 
+  const int mode_rc = this->fastepd_.setMode(BB_MODE_1BPP);
+  if (mode_rc != BBEP_SUCCESS) {
+    ESP_LOGE(TAG, "FastEPD 1bpp mode setup failed (error=%d)", mode_rc);
+    this->mark_failed();
+    return;
+  }
+
   this->fastepd_.fillScreen(BBEP_WHITE);
   ESP_LOGI(TAG, "Performing initial display render");
   this->do_update_();
-  this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
+  const int update_rc =
+      this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
+  if (update_rc != BBEP_SUCCESS) {
+    ESP_LOGE(TAG, "FastEPD initial full update failed (error=%d)", update_rc);
+    this->mark_failed();
+    return;
+  }
   this->initialized_ = true;
 }
 
@@ -28,7 +42,12 @@ void FastEPDDisplay::update() {
   }
 
   this->do_update_();
-  this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
+  const int update_rc =
+      this->fastepd_.fullUpdate(this->full_update_clear_mode_, false, nullptr);
+  if (update_rc != BBEP_SUCCESS) {
+    ESP_LOGE(TAG, "FastEPD full update failed (error=%d)", update_rc);
+    this->status_set_warning();
+  }
 }
 
 void FastEPDDisplay::draw_absolute_pixel_internal(int x, int y, Color color) {
