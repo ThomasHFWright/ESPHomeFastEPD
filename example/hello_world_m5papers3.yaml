@@ -1,0 +1,38 @@
+esphome:
+  name: fastepd-hello
+  friendly_name: FastEPD Hello
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ThomasHFWright/ESPHomeFastEPD
+      ref: main
+    components: [fastepd_display]
+
+logger:
+
+font:
+  - file: "gfonts://Roboto"
+    id: my_font
+    size: 42
+
+display:
+  - platform: fastepd_display
+    id: hello_display
+    update_interval: never
+    rotation: 270
+    lambda: |-
+      it.fill(Color(255, 255, 255));
+      it.print(
+        it.get_width() / 2,
+        it.get_height() / 2,
+        id(my_font),
+        Color(0, 0, 0),
+        TextAlign::CENTER,
+        "Hello world"
+      );

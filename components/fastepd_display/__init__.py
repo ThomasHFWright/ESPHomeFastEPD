@@ -1,0 +1,1 @@
+"""ESPHome FastEPD display platform."""

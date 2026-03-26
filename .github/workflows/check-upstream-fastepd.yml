@@ -1,0 +1,71 @@
+name: Check FastEPD upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 7 * * 1"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare pinned FastEPD ref to latest release
+        id: compare
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pinned_ref="$(cat components/fastepd_display/upstream_fastepd_ref.txt \
+            | tr -d '[:space:]')"
+          latest_ref="$(gh api repos/bitbank2/FastEPD/releases/latest --jq .tag_name)"
+          echo "pinned_ref=${pinned_ref}" >> "$GITHUB_OUTPUT"
+          echo "latest_ref=${latest_ref}" >> "$GITHUB_OUTPUT"
+          if [ "$pinned_ref" != "$latest_ref" ]; then
+            echo "needs_update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_update=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open issue when update is available
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pinned = `${{ steps.compare.outputs.pinned_ref }}`;
+            const latest = `${{ steps.compare.outputs.latest_ref }}`;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const title = `FastEPD update available: ${pinned} -> ${latest}`;
+
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              labels: 'dependencies'
+            });
+
+            if (existing.some(issue => issue.title === title)) {
+              core.info('Update issue already open.');
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              labels: ['dependencies'],
+              body: [
+                'A new FastEPD release was detected.',
+                '',
+                `- Pinned in this repo: \`${pinned}\``,
+                `- Latest upstream release: \`${latest}\``,
+                '',
+                'If you decide to update, change the pinned ref in:',
+                '- `components/fastepd_display/display.py`',
+                '- `components/fastepd_display/upstream_fastepd_ref.txt`',
+              ].join('\n')
+            });
