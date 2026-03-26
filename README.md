@@ -37,6 +37,10 @@ external_components:
       ref: main
     components: [fastepd_display]
 
+logger:
+  baud_rate: 115200
+  hardware_uart: USB_SERIAL_JTAG
+
 font:
   - file: "gfonts://Roboto"
     id: my_font
@@ -53,6 +57,18 @@ display:
 ```
 
 See: [`example/hello_world_m5papers3.yaml`](example/hello_world_m5papers3.yaml).
+
+## Troubleshooting
+
+If upload succeeds but you see no runtime logs on ESP32-S3 over USB, configure logger output for USB Serial/JTAG:
+
+```yaml
+logger:
+  baud_rate: 115200
+  hardware_uart: USB_SERIAL_JTAG
+```
+
+Then reset the board and look for `fastepd_display` startup logs.
 
 ## Upstream dependency strategy (low maintenance)
 
