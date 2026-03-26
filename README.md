@@ -76,3 +76,22 @@ This provides reproducible builds while still keeping updates visible and easy.
 ## License
 
 MIT for this wrapper repo. FastEPD itself remains licensed by its upstream project.
+
+## Strict linting and commit blocking
+
+This repo now uses **strict pre-commit linting** for Python, YAML, and C/C++ formatting.
+
+1. Install lint tooling:
+   ```bash
+   pip install pre-commit
+   ```
+2. Enable repository hooks (required to block bad commits):
+   ```bash
+   ./scripts/install-git-hooks.sh
+   ```
+3. Run full lint locally:
+   ```bash
+   pre-commit run --all-files
+   ```
+
+With `core.hooksPath` set to `.githooks`, commits are blocked when lint fails. CI also enforces this via `.github/workflows/lint.yml`.

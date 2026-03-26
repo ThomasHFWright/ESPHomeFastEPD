@@ -42,5 +42,5 @@ void FastEPDDisplay::dump_config() {
 
 float FastEPDDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
 
-}  // namespace fastepd_display
-}  // namespace esphome
+} // namespace fastepd_display
+} // namespace esphome

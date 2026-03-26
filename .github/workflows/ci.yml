@@ -18,8 +18,18 @@ jobs:
       - name: Build local CI config
         run: |
           cp example/hello_world_m5papers3.yaml hello_world_ci.yaml
-          sed -i 's|type: git|type: local|g' hello_world_ci.yaml
-          sed -i 's|url: https://github.com/ThomasHFWright/ESPHomeFastEPD|path: ./components|g' hello_world_ci.yaml
-          sed -i '/ref: main/d' hello_world_ci.yaml
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('hello_world_ci.yaml')
+          data = path.read_text()
+          data = data.replace('type: git', 'type: local')
+          data = data.replace(
+              'url: https://github.com/ThomasHFWright/ESPHomeFastEPD',
+              'path: ./components',
+          )
+          data = data.replace('      ref: main\n', '')
+          path.write_text(data)
+          PY
       - name: Validate example YAML
         run: esphome config hello_world_ci.yaml

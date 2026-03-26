@@ -20,7 +20,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          pinned_ref="$(cat components/fastepd_display/upstream_fastepd_ref.txt | tr -d '[:space:]')"
+          pinned_ref="$(cat components/fastepd_display/upstream_fastepd_ref.txt \
+            | tr -d '[:space:]')"
           latest_ref="$(gh api repos/bitbank2/FastEPD/releases/latest --jq .tag_name)"
           echo "pinned_ref=${pinned_ref}" >> "$GITHUB_OUTPUT"
           echo "latest_ref=${latest_ref}" >> "$GITHUB_OUTPUT"
